@@ -1,18 +1,32 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { PaymentController } from './payment.controller';
+import { PaymentService } from './payment.service';
+import { ConfigService } from '@nestjs/config';
 
-describe('PaymentController', () => {
-  let controller: PaymentController;
+describe('PaymentService', () => {
+  let service: PaymentService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [PaymentController],
+      providers: [
+        PaymentService,
+        {
+          provide: ConfigService,
+          useValue: {
+            get: jest.fn((key: string) => {
+              if (key === 'BRAND_ID') return 'test-brand-id';
+              if (key === 'API_KEY') return 'test-brand-id';
+              if (key === 'S2S_TOKEN') return 'test-brand-id';
+              return null;
+            }),
+          },
+        },
+      ],
     }).compile();
 
-    controller = module.get<PaymentController>(PaymentController);
+    service = module.get<PaymentService>(PaymentService);
   });
 
   it('should be defined', () => {
-    expect(controller).toBeDefined();
+    expect(service).toBeDefined();
   });
 });

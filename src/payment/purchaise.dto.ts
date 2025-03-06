@@ -1,21 +1,34 @@
-export interface PurchaseRequestDto {
-  client: {
-    email: string;
-  };
-  payment: {
-    amount: number;
-    currency: string;
-    description: string;
-  };
-  purchase: {
-    products: {
-      name: string;
-      price: number;
-    }[];
-  };
-  brand_id: string;
-  success_redirect: string;
-  failure_redirect: string;
+import { IsNotEmpty, IsString, IsUrl } from 'class-validator';
+
+export class Data3Ds {
+  @IsNotEmpty({ message: 'PaReq is required' })
+  @IsString({ message: 'PaReq must be a string' })
+  PaReq: string;
+
+  @IsNotEmpty({ message: 'MD is required' })
+  @IsString({ message: 'MD must be a string' })
+  MD: string;
+
+  @IsNotEmpty({ message: 'TermUrl is required' })
+  @IsUrl({}, { message: 'TermUrl must be a valid URL' })
+  TermUrl: string;
+
+  @IsNotEmpty({ message: 'Method is required' })
+  @IsString({ message: 'Method must be a string' })
+  method: string;
+
+  @IsNotEmpty({ message: 'URL is required' })
+  @IsUrl({}, { message: 'URL must be a valid URL' })
+  url: string;
+}
+
+export interface ProcessPurchaseResponse {
+  status: string;
+  Method?: string;
+  URL?: string;
+  PaReq?: string;
+  MD?: string;
+  callback_url?: string;
 }
 
 export interface CreatePurchaseResponse {
@@ -23,21 +36,4 @@ export interface CreatePurchaseResponse {
   direct_post_url: string;
   checkout_url: string;
   status: string;
-}
-
-export interface ProcessPurchaseResponse {
-  status: string;
-  Method?: string;
-  URL?: string
-  PaReq?: string;
-  MD?: string;
-  callback_url?: string
-}
-
-export interface Data3Ds {
-  PaReq: string;
-  MD: string;
-  TermUrl: string;
-  method: string;
-  url: string
 }

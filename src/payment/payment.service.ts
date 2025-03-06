@@ -19,12 +19,10 @@ export class PaymentService {
   private readonly s2sToken: string;
 
   constructor(@Inject(ConfigService) private configService: ConfigService) {
-    // Require environment variables and throw if not provided
     this.brandId = this.getRequiredConfig('BRAND_ID');
     this.apiKey = this.getRequiredConfig('API_KEY');
     this.s2sToken = this.getRequiredConfig('S2S_TOKEN');
 
-    // Log configuration load
     this.logger.log('PaymentService initialized with configuration');
     this.logger.debug('Loaded config:', {
       brandId: this.brandId,
