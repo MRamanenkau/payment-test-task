@@ -1,11 +1,16 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { PaymentModule } from './payment/payment.module';
+import { ConfigModule } from '@nestjs/config';
+import { PaymentService } from './payment/payment.service';
+import { PaymentController } from './payment/payment.controller';
 
 @Module({
-  imports: [PaymentModule],
-  controllers: [AppController],
-  providers: [AppService],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: ['.env'],
+    }),
+  ],
+  controllers: [PaymentController],
+  providers: [PaymentService],
 })
 export class AppModule {}

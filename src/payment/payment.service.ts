@@ -1,4 +1,5 @@
-import { Injectable, HttpException, HttpStatus, Logger } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus, Logger, Inject } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import axios, { AxiosResponse, AxiosError } from 'axios';
 import { CreatePaymentDto } from './payment.dto';
 import { CreatePurchaseResponse, ProcessPurchaseResponse } from './purchaise.dto';
@@ -13,7 +14,34 @@ interface ExternalApiError {
 export class PaymentService {
   private readonly logger = new Logger(PaymentService.name);
   private readonly apiUrl = 'https://gate.libernetix.com/api/v1/purchases/';
- 
+  private readonly brandId: string;
+  private readonly apiKey: string;
+  private readonly s2sToken: string;
+
+  constructor(@Inject(ConfigService) private configService: ConfigService) {
+    // Require environment variables and throw if not provided
+    this.brandId = this.getRequiredConfig('BRAND_ID');
+    this.apiKey = this.getRequiredConfig('API_KEY');
+    this.s2sToken = this.getRequiredConfig('S2S_TOKEN');
+
+    // Log configuration load
+    this.logger.log('PaymentService initialized with configuration');
+    this.logger.debug('Loaded config:', {
+      brandId: this.brandId,
+      apiKey: this.apiKey.slice(0, 10) + '...',
+      s2sToken: this.s2sToken.slice(0, 10) + '...'
+    });
+  }
+
+  private getRequiredConfig(key: string): string {
+    const value = this.configService.get<string>(key);
+    if (!value) {
+      this.logger.error(`Missing required configuration: ${key}`);
+      throw new Error(`Configuration error: ${key} is required but not provided`);
+    }
+    return value;
+  }
+
   async createPurchase(createPaymentDto: CreatePaymentDto): Promise<CreatePurchaseResponse> {
     this.logger.log('Starting purchase creation');
 
